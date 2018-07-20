@@ -1,0 +1,37 @@
+{
+    "name": "huangdijia/laravel-accessyou",
+    "description": "accessyou for laravel",
+    "type": "library",
+    "keywords": [
+        "laravel",
+        "accessyou"
+    ],
+    "homepage": "https://github.com/huangdijia/laravel-accessyou",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "huangdijia",
+            "email": "huangdijia@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": ">=7.0.0",
+        "laravel/framework": "~5.5"
+    },
+    "autoload": {
+        "files": [
+            "src/helpers.php"
+        ],
+        "psr-4": {
+            "Huangdijia\\Accessyou\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Huangdijia\\Accessyou\\AccessyouServiceProvider"
+            ]
+        }
+    }
+}

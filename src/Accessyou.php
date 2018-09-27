@@ -96,7 +96,7 @@ class Accessyou
 
     private function checkMobile($mobile = '')
     {
-        return preg_match('/^(9|6|5)\d{7}$/', $mobile);
+        return preg_match('/^(4|5|6|7|8|9)\d{7}$/', $mobile);
     }
 
     private function checkMessage($message = '')

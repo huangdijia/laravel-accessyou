@@ -59,7 +59,14 @@ class Accessyou
         $data = http_build_query($data);
         $url  = $this->api;
         $url .= strpos($url, '?') ? $data : "?{$data}";
-        $response = Curl::get($url);
+
+        try {
+            $response = Curl::get($url);
+        } catch (\Exception $e) {
+            $this->error = $e->getMessage();
+            $this->errno = 401;
+            return false;
+        }
         
         if (false === $response) {
             $this->error = "request faild";

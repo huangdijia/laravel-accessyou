@@ -95,8 +95,10 @@ class Accessyou
         return true;
     }
 
-    public function info()
+    public function info($config = [])
     {
+        $this->config = array_merge($this->config, $config);
+
         $url = sprintf(
             $this->apis['check_accinfo'],
             $this->config['account'],

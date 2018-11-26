@@ -7,14 +7,16 @@ use Exception;
 class Accessyou
 {
     private $config = [];
-    private $api    = 'http://api.accessyou.com/sms/sendsms.php';
-    private $init   = true;
+    private $apis   = [
+        'send_sms'      => 'http://api.accessyou.com/sms/sendsms.php',
+        'check_accinfo' => 'https://q.accessyou-api.com/sms/check_accinfo.php?accountno=%s&user=%s&pwd=%s',
+    ];
+    private $init = true;
     private $errno;
     private $error;
-    
+
     public function __construct($config)
     {
-        $this->config = $config;
         if (empty($config['account'])) {
             $this->error = "config access.account is undefined";
             $this->errno = 101;
@@ -27,6 +29,8 @@ class Accessyou
             $this->init  = false;
             return;
         }
+
+        $this->config = $config;
     }
 
     public function send($mobile = '', $message = '')
@@ -57,7 +61,7 @@ class Accessyou
         ];
 
         $data = http_build_query($data);
-        $url  = $this->api;
+        $url  = $this->apis['send_sms'] ?? '';
         $url .= strpos($url, '?') ? $data : "?{$data}";
 
         try {
@@ -67,7 +71,7 @@ class Accessyou
             $this->errno = 401;
             return false;
         }
-        
+
         if (false === $response) {
             $this->error = "request faild";
             $this->errno = 401;
@@ -89,6 +93,44 @@ class Accessyou
         }
 
         return true;
+    }
+
+    public function info()
+    {
+        $url = sprintf(
+            $this->apis['check_accinfo'],
+            $this->config['account'],
+            $this->config['check_user'],
+            $this->config['check_password']
+        );
+
+        try {
+            $response = Curl::get($url);
+
+            if (false === $response) {
+                $this->error = "request faild";
+                $this->errno = 401;
+                return false;
+            }
+
+            $xml = simplexml_load_string($response);
+
+            if (($xml->auth->auth_status ?? '') != 100) {
+                $this->error = $xml->auth->auth_status_desc ?? '';
+                $this->errno = $xml->auth->auth_status ?? '';
+                return false;
+            }
+    
+            return [
+                'account_no'  => $xml->balanceinfo->account_no ?? '',
+                'balance'     => $xml->balanceinfo->balance ?? '',
+                'expiry_date' => $xml->balanceinfo->expiry_date ?? '',
+            ];
+        } catch (\Exception $e) {
+            $this->error = $e->getMessage();
+            $this->errno = 401;
+            return false;
+        }
     }
 
     public function getError()

@@ -9,6 +9,7 @@ class AccessyouServiceProvider extends ServiceProvider
     protected $defer = true;
     protected $commands = [
         'Huangdijia\\Accessyou\\Console\\AccessyouSendCommand',
+        'Huangdijia\\Accessyou\\Console\\AccessyouInfoCommand',
     ];
 
     public function boot()
@@ -29,7 +30,7 @@ class AccessyouServiceProvider extends ServiceProvider
     public function provides()
     {
         return [
-            'sms.accessyou'
+            'sms.accessyou',
         ];
     }
 }

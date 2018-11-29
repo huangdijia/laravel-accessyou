@@ -3,6 +3,7 @@
 namespace Huangdijia\Accessyou\Facades;
 
 use Illuminate\Support\Facades\Facade;
+use Huangdijia\Accessyou\Accessyou as Accessor;
 
 /**
  * @method static boolean send($mobile, $message)
@@ -13,6 +14,6 @@ class Accessyou extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'sms.accessyou'; 
+        return Accessor::class;  
     }
 }

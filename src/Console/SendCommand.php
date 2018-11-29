@@ -4,7 +4,7 @@ namespace Huangdijia\Accessyou\Console;
 
 use Illuminate\Console\Command;
 
-class AccessyouSendCommand extends Command
+class SendCommand extends Command
 {
     protected $signature   = 'accessyou:send {mobile : Mobile Number} {message : Message Content}';
     protected $description = 'Send a message by accessyou';

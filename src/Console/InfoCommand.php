@@ -4,7 +4,7 @@ namespace Huangdijia\Accessyou\Console;
 
 use Illuminate\Console\Command;
 
-class AccessyouInfoCommand extends Command
+class InfoCommand extends Command
 {
     protected $signature   = 'accessyou:info';
     protected $description = 'Check account info of accessyou';

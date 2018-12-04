@@ -116,6 +116,8 @@ class Accessyou
             }
 
             $xml = simplexml_load_string($response);
+            $xml = json_encode($xml);
+            $xml = json_decode($xml);
 
             if (($xml->auth->auth_status ?? '') != 100) {
                 $this->error = $xml->auth->auth_status_desc ?? '';

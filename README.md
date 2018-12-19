@@ -1,13 +1,15 @@
-# laravel-accessyou
+# SMS gateway for HK accessyou
 
-SMS gateway for HK accessyou
+[![Latest Stable Version](https://poser.pugx.org/huangdijia/laravel-accessyou/version.png)](https://packagist.org/packages/huangdijia/laravel-accessyou)
+[![Total Downloads](https://poser.pugx.org/huangdijia/laravel-accessyou/d/total.png)](https://packagist.org/packages/huangdijia/laravel-accessyou)
 
-# Requirements
+
+## Requirements
 
 * PHP >= 7.0
 * Laravel >= 5.5
 
-# Installation
+## Installation
 
 First, install laravel 5.5, and make sure that the database connection settings are correct.
 
@@ -21,7 +23,7 @@ Then run these commands to publish config
 php artisan vendor:publish --provider="Huangdijia\Accessyou\AccessyouServiceProvider"
 ~~~
 
-# Configurations
+## Configurations
 
 ~~~php
 // config/accessyou.php
@@ -29,9 +31,9 @@ php artisan vendor:publish --provider="Huangdijia\Accessyou\AccessyouServiceProv
     'password' => 'your password',
 ~~~
 
-# Usage
+## Usage
 
-## As Facade
+### As Facade
 
 ~~~php
 use Huangdijia\Accessyou\Facades\Accessyou;
@@ -47,7 +49,7 @@ if (!Accessyou::send('mobile', 'some message')) {
 
 ~~~
 
-## As Command
+### As Command
 
 ~~~bash
 php artisan accessyou:send 'mobile' 'some message'
@@ -56,7 +58,7 @@ php artisan accessyou:send 'mobile' 'some message'
 # error
 ~~~
 
-## As Helper
+### As Helper
 
 ~~~php
 if (!accessyou()->send('mobile', 'some message')) {
@@ -72,10 +74,10 @@ if (!$error = accessyou_send('mobile', 'some message')) {
 }
 ~~~
 
-# Other
+## Other
 
 > * http://accessyou.com
 
-# License
+## License
 
 laravel-ipip is licensed under The MIT License (MIT).

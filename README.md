@@ -80,4 +80,4 @@ if (!$error = accessyou_send('mobile', 'some message')) {
 
 ## License
 
-laravel-ipip is licensed under The MIT License (MIT).
+laravel-access is licensed under The MIT License (MIT).

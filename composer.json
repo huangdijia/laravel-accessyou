@@ -31,7 +31,10 @@
         "laravel": {
             "providers": [
                 "Huangdijia\\Accessyou\\AccessyouServiceProvider"
-            ]
+            ],
+            "alias": {
+                "Accessyou": "Huangdijia\\Accessyou\\Facades\\Accessyou"
+            }
         }
     }
 }

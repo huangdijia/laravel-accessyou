@@ -32,7 +32,7 @@
             "providers": [
                 "Huangdijia\\Accessyou\\AccessyouServiceProvider"
             ],
-            "alias": {
+            "aliases": {
                 "Accessyou": "Huangdijia\\Accessyou\\Facades\\Accessyou"
             }
         }

@@ -3,6 +3,7 @@
 namespace Huangdijia\Accessyou;
 
 use Exception;
+use Huangdijia\Curl\Facades\Curl;
 
 class Accessyou
 {
@@ -124,7 +125,7 @@ class Accessyou
                 $this->errno = $xml->auth->auth_status ?? '';
                 return false;
             }
-    
+
             return [
                 'account_no'  => $xml->balanceinfo->account_no ?? '',
                 'balance'     => $xml->balanceinfo->balance ?? '',

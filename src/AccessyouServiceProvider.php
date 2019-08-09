@@ -2,8 +2,6 @@
 
 namespace Huangdijia\Accessyou;
 
-use Huangdijia\Accessyou\Console\InfoCommand;
-use Huangdijia\Accessyou\Console\SendCommand;
 use Illuminate\Support\ServiceProvider;
 
 class AccessyouServiceProvider extends ServiceProvider
@@ -11,8 +9,8 @@ class AccessyouServiceProvider extends ServiceProvider
     protected $defer = true;
 
     protected $commands = [
-        SendCommand::class,
-        InfoCommand::class,
+        Console\SendCommand::class,
+        Console\InfoCommand::class,
     ];
 
     public function boot()

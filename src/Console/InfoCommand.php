@@ -11,7 +11,7 @@ class InfoCommand extends Command
 
     public function handle()
     {
-        $accessyou = app('sms.accessyou');
+        $accessyou = $this->laravel->make('sms.accessyou');
         $result    = $accessyou->info();
 
         if (!$result) {

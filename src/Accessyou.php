@@ -3,7 +3,7 @@
 namespace Huangdijia\Accessyou;
 
 use Exception;
-use Huangdijia\Curl\Facades\Curl;
+use Illuminate\Support\Facades\Http;
 
 class Accessyou
 {
@@ -12,47 +12,32 @@ class Accessyou
         'send_sms'      => 'http://api.accessyou.com/sms/sendsms.php',
         'check_accinfo' => 'https://q.accessyou-api.com/sms/check_accinfo.php?accountno=%s&user=%s&pwd=%s',
     ];
-    private $init = true;
-    private $errno;
-    private $error;
 
+    /**
+     * Construct
+     * @param mixed $config
+     * @return void
+     */
     public function __construct($config)
     {
-        if (empty($config['account'])) {
-            $this->error = "config access.account is undefined";
-            $this->errno = 101;
-            $this->init  = false;
-            return;
-        }
-        if (empty($config['password'])) {
-            $this->error = "config access.password is undefined";
-            $this->errno = 102;
-            $this->init  = false;
-            return;
-        }
-
         $this->config = $config;
     }
 
+    /**
+     * Send sms
+     * @param string $mobile
+     * @param string $message
+     * @return true
+     */
     public function send($mobile = '', $message = '')
     {
-        if (!$this->init) {
-            return false;
-        }
+        throw_if(empty($this->config['account']), new Exception("Config accessyou.account is undefined", 101));
 
-        $this->error = null;
-        $this->errno = null;
+        throw_if(empty($this->config['password']), new Exception("Config accessyou.password is undefined", 102));
 
-        if (!$this->checkMobile($mobile)) {
-            $this->error = "invalid mobile";
-            $this->errno = 103;
-            return false;
-        }
-        if (!$this->checkMessage($message)) {
-            $this->error = "message is empty";
-            $this->errno = 104;
-            return false;
-        }
+        throw_if(!$this->checkMobile($mobile), new Exception("invalid mobile", 103));
+
+        throw_if(!$this->checkMessage($message), new Exception("message is empty", 104));
 
         $data = [
             'msg'       => self::msgEncode($message),
@@ -61,108 +46,84 @@ class Accessyou
             'pwd'       => $this->config['password'],
         ];
 
-        $data = http_build_query($data);
-        $url  = $this->apis['send_sms'] ?? '';
-        $url .= strpos($url, '?') ? $data : "?{$data}";
+        $response = Http::get($this->apis['send_sms'], $data)
+            ->throw();
 
-        try {
-            $response = Curl::get($url);
-        } catch (\Exception $e) {
-            $this->error = $e->getMessage();
-            $this->errno = 401;
-            return false;
-        }
+        $content = trim($response->body());
 
-        if (false === $response) {
-            $this->error = "request faild";
-            $this->errno = 401;
-            return false;
-        }
+        throw_if($content == '', new Exception("Response body is empty!"));
 
-        $response = trim($response);
-
-        if ($response == '') {
-            $this->error = "empty response";
-            $this->errno = 402;
-            return false;
-        }
-
-        if (!is_numeric($response)) {
-            $this->error = $response;
-            $this->errno = 403;
-            return false;
-        }
+        throw_if(!is_numeric($content), new Exception($content));
 
         return true;
     }
 
-    public function info($config = [])
+    /**
+     * Get info
+     * @param array $config
+     * @return false|array
+     */
+    public function info(array $config = [])
     {
-        $this->config = array_merge($this->config, $config);
+        $config = array_merge($this->config, $config);
 
         $url = sprintf(
             $this->apis['check_accinfo'],
-            $this->config['account'],
-            $this->config['check_user'],
-            $this->config['check_password']
+            $config['account'],
+            $config['check_user'],
+            $config['check_password']
         );
 
-        try {
-            $response = Curl::get($url);
+        $response = Http::get($url)->throw();
 
-            if (false === $response) {
-                $this->error = "request faild";
-                $this->errno = 401;
-                return false;
-            }
+        $xml = simplexml_load_string($response);
+        $xml = json_encode($xml);
+        $xml = json_decode($xml);
 
-            $xml = simplexml_load_string($response);
-            $xml = json_encode($xml);
-            $xml = json_decode($xml);
+        throw_if(($xml->auth->auth_status ?? '') != 100, new Exception($xml->auth->auth_status_desc ?? '', $xml->auth->auth_status ?? 1));
 
-            if (($xml->auth->auth_status ?? '') != 100) {
-                $this->error = $xml->auth->auth_status_desc ?? '';
-                $this->errno = $xml->auth->auth_status ?? '';
-                return false;
-            }
-
-            return [
-                'account_no'  => $xml->balanceinfo->account_no ?? '',
-                'balance'     => $xml->balanceinfo->balance ?? '',
-                'expiry_date' => $xml->balanceinfo->expiry_date ?? '',
-            ];
-        } catch (\Exception $e) {
-            $this->error = $e->getMessage();
-            $this->errno = 401;
-            return false;
-        }
+        return [
+            'account_no'  => $xml->balanceinfo->account_no ?? '',
+            'balance'     => $xml->balanceinfo->balance ?? '',
+            'expiry_date' => $xml->balanceinfo->expiry_date ?? '',
+        ];
     }
 
-    public function getError()
-    {
-        return $this->error;
-    }
-
-    public function getErrno()
-    {
-        return $this->errno;
-    }
-
+    /**
+     * Check mobile
+     * @param string $mobile 
+     * @return bool
+     */
     private function checkMobile($mobile = '')
     {
-        return preg_match('/^(4|5|6|7|8|9)\d{7}$/', $mobile);
+        return preg_match('/^(4|5|6|7|8|9)\d{7}$/', $mobile) ? true : false;
     }
 
+    /**
+     * Check message
+     * @param string $message 
+     * @return bool 
+     */
     private function checkMessage($message = '')
     {
         return !empty($message) ? true : false;
     }
 
+    /**
+     * Encode sms content
+     * @param string $str 
+     * @return string|string[]|null 
+     */
     private static function msgEncode($str = '')
     {
         return self::unicodeGet(self::convert(2, $str));
     }
 
+    /**
+     * Replace chars
+     * @param mixed $str 
+     * @return string|string[]|null 
+     */
     private static function unicodeGet($str)
     {
         $str = preg_replace("/&#/", "%26%23", $str);
@@ -170,6 +131,12 @@ class Accessyou
         return $str;
     }
 
+    /**
+     * Convert
+     * @param mixed $language 
+     * @param mixed $cell 
+     * @return string|void 
+     */
     private static function convert($language, $cell)
     {
         $str = "";
@@ -198,6 +165,11 @@ class Accessyou
         }
     }
 
+    /**
+     * encode unicode
+     * @param mixed $c 
+     * @return int|void 
+     */
     private static function chineseUnicode($c)
     {
         switch (strlen($c)) {
@@ -221,6 +193,11 @@ class Accessyou
         }
     }
 
+    /**
+     * encode utf8 unicode
+     * @param mixed $str 
+     * @return array 
+     */
     private static function utf8Unicode($str)
     {
         $unicode    = [];

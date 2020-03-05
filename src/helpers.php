@@ -9,6 +9,6 @@ if (!function_exists('accessyou')) {
 if (!function_exists('accessyou_send')) {
     function accessyou_send($mobile = '', $message = '')
     {
-        return app('sms.accessyou')->send($mobile, $message) ?: app('sms.accessyou')->getError();
+        return app('sms.accessyou')->send($mobile, $message);
     }
 }

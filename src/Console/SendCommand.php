@@ -11,12 +11,13 @@ class SendCommand extends Command
 
     public function handle()
     {
-        $mobile    = $this->argument('mobile');
-        $message   = $this->argument('message');
-        $accessyou = app('sms.accessyou');
+        $mobile  = $this->argument('mobile');
+        $message = $this->argument('message');
 
-        if (!$accessyou->send($mobile, $message)) {
-            $this->error($accessyou->getError(), 1);
+        try {
+            $this->laravel->make('sms.accessyou')->send($mobile, $message);
+        } catch (\Exception $e) {
+            $this->error($e->getMessage(), 1);
             return;
         }
 

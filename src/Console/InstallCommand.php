@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 class InstallCommand extends Command
 {
-    protected $signature   = 'mxtong:install';
+    protected $signature   = 'accessyou:install';
     protected $description = 'Install config.';
 
     public function handle()

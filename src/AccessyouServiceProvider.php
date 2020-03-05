@@ -24,7 +24,7 @@ class AccessyouServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(Accessyou::class, function () {
-            return new Accessyou($this->app['config']->get('accessyou'));
+            return new Accessyou($this->app['config']->get('accessyou', []));
         });
 
         $this->app->alias(Accessyou::class, 'sms.accessyou');

@@ -18,7 +18,7 @@ class Accessyou
      * @param mixed $config
      * @return void
      */
-    public function __construct($config)
+    public function __construct(array $config)
     {
         $this->config = $config;
     }
@@ -61,7 +61,7 @@ class Accessyou
     /**
      * Get info
      * @param array $config
-     * @return false|array
+     * @return array
      */
     public function info(array $config = [])
     {
